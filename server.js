@@ -2,30 +2,23 @@
  * Created by kafui on 6/16/2016.
  */
 var express = require('express');
+var bodyParser = require('body-parser');
+
 var app = express();
 var PORT = process.env.PORT || 3000;
-var todos = [{
-    id: 1,
-    description: 'meet mom for lunch',
-    completed: false
-},{
-    id: 2,
-    description: 'go to the mall',
-    completed: false
-},{
-    id: 3,
-    description: 'dinner date with maud',
-    completed: true
-}];
+var todos = [];
+var todoNextId =1;
+
+app.use(bodyParser.json());
 
 app.get('/', function(req,res){
     res.send('TODO API root!');
 });
-//GET all
+//GET /todos/
 app.get('/todos', function(req,res){
     res.json(todos);
 });
-//get by id
+//GET /todos/:id
 app.get('/todos/:id',function(req,res){
     var todoId = parseInt(req.params.id);
     var matchedTodo;
@@ -40,6 +33,17 @@ app.get('/todos/:id',function(req,res){
         res.status(404).send();
     }
     //res.send('Asking for todos with id of: ' + req.params.id);
+});
+
+//POST /todos/
+app.post('/todos',function(req,res){
+    var body = req.body;
+    //add id
+    body.id = todoNextId;
+    todoNextId++;
+    //push todo
+    todos.push(body);
+    res.json(body);
 });
 
 app.listen(PORT, function(){
