@@ -15,10 +15,23 @@ app.use(bodyParser.json());
 app.get('/', function(req,res){
     res.send('TODO API root!');
 });
-//GET /todos/
+
+
+//GET /todos?completed=true
 app.get('/todos', function(req,res){
-    res.json(todos);
+    var queryParams = req.query;
+    var filteredTodos = todos;
+    if(queryParams.hasOwnProperty('complete') && queryParams.complete === 'true'){
+        filteredTodos = _.where(filteredTodos,{complete:true});
+    }else if(queryParams.hasOwnProperty('complete') && queryParams.complete === 'false'){
+        filteredTodos = _.where(filteredTodos,{scomplete:false});
+    }
+
+
+    res.json(filteredTodos);
 });
+
+
 //GET /todos/:id
 app.get('/todos/:id',function(req,res){
     var todoId = parseInt(req.params.id, 10);
