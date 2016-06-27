@@ -9,7 +9,7 @@ var db = require('./db.js');
 var app = express();
 var PORT = process.env.PORT || 3000;
 var todos = [];
-var todoNextId =1;
+//var todoNextId =1;
 
 app.use(bodyParser.json());
 
@@ -41,12 +41,22 @@ app.get('/todos', function(req,res){
 //GET /todos/:id
 app.get('/todos/:id',function(req,res){
     var todoId = parseInt(req.params.id, 10);
-    var matchedTodo = _.findWhere(todos,{id: todoId});
-    if(matchedTodo){
-        res.json(matchedTodo);
-    }else{
-        res.status(404).send();
-    }
+
+    db.todo.findById(todoId).then(function(todo){
+        if(!!todo){
+            res.json(todo.toJSON());
+        }else{
+            res.status(404).send();
+        }
+    }, function(e){
+        res.status(500).json(e);
+    });
+    //var matchedTodo = _.findWhere(todos,{id: todoId});
+    //if(matchedTodo){
+    //    res.json(matchedTodo);
+    //}else{
+    //    res.status(404).send();
+    //}
     //res.send('Asking for todos with id of: ' + req.params.id);
 });
 
